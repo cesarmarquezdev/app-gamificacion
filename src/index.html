@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<script>document.documentElement.dataset.theme='dark'</script> <!-- evita el destello blanco al abrir; render() aplica el tema guardado -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Nivel</title>
+<style>
+:root{--bg:#F2F2F7;--card:#fff;--text:#000;--mut:#6E6E73;--line:#C6C6C8;--off:#C7C7CC;--track:#E5E5EA;--blue:#0071E3;--link:#0066CC;--red:#D70F47;--green:#34C759;--grn:#248A3D;color-scheme:light}
+:root[data-theme=dark]{--bg:#000;--card:#1C1C1E;--text:#fff;--mut:#98989D;--line:#38383A;--off:#48484A;--track:#3A3A3C;--link:#64A8FF;--red:#FF6482;--grn:#30D158;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:17px/1.3 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,system-ui,sans-serif;-webkit-text-size-adjust:100%}
+button{font:inherit;cursor:pointer;color:inherit;background:none;border:0;padding:0;text-align:left}
+input,textarea{font:inherit;color:var(--text);outline:none}
+h1,h2,p{margin:0}
+#app{max-width:520px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 20px) 16px calc(env(safe-area-inset-bottom) + 40px);display:flex;flex-direction:column;gap:20px}
+.mut{color:var(--mut)}.sm{font-size:13px}
+.eyebrow{font-size:13px;font-weight:600;color:var(--mut);text-transform:uppercase;letter-spacing:.04em}
+.card{background:var(--card);border-radius:12px;overflow:hidden}
+.sec{display:flex;flex-direction:column;gap:8px}
+.sech{display:flex;justify-content:space-between;align-items:baseline;padding:0 4px}
+.sech h2{font-size:22px;font-weight:700;letter-spacing:-.01em}
+.hero{background:var(--card);border-radius:16px;padding:16px;display:flex;align-items:center;gap:20px}
+.stat{display:flex;flex-direction:column}.stat b{font-size:20px;font-weight:600;letter-spacing:-.01em}.stat span{font-size:13px;font-weight:600}
+.row{display:flex;align-items:center;gap:12px;padding-left:16px;width:100%;background:var(--card)}
+.row .in{flex:1;display:flex;align-items:center;gap:8px;padding:10px 16px 10px 0;border-bottom:.5px solid var(--line)}
+.row:last-child .in{border-bottom:0}
+.row .tx{flex:1;display:flex;flex-direction:column}
+.circ{width:24px;height:24px;flex-shrink:0;border-radius:50%;border:1.5px solid var(--off);display:flex;align-items:center;justify-content:center;color:#fff}
+.circ.on{background:#007AFF;border-color:#007AFF}
+.circ svg{display:none}.circ.on svg{display:block}
+.ck{background:var(--card)}.ck.on{background:var(--green);border-color:var(--green)}
+.xp{font-size:15px;font-weight:500;color:var(--red)}
+.skills{display:flex;gap:10px;overflow-x:auto}
+.skill{width:108px;flex-shrink:0;background:var(--card);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:4px}
+.bar{height:4px;background:var(--track);border-radius:2px;margin-top:4px}.bar i{display:block;height:100%;border-radius:2px}
+.link{color:var(--link);font-size:17px}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:10;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--bg);border-radius:12px 12px 0 0;width:100%;max-width:520px;height:calc(100% - 44px);display:flex;flex-direction:column;overflow:hidden}
+.grab{width:36px;height:5px;border-radius:3px;background:var(--off);margin:6px auto 0;flex-shrink:0}
+.nav{display:flex;justify-content:space-between;align-items:center;padding:2px 8px 0}
+.nav button{color:var(--link);padding:10px 8px;min-height:44px}
+.head{padding:0 20px;display:flex;flex-direction:column;gap:6px}
+.head h2{font-size:28px;font-weight:700;letter-spacing:-.02em;line-height:1.1}
+.list{flex:1;min-height:0;overflow-y:auto;padding:0 16px 12px;display:flex;flex-direction:column;gap:16px}
+.foot{padding:12px 16px calc(env(safe-area-inset-bottom) + 16px)}
+.btn{width:100%;height:50px;border-radius:14px;background:var(--blue);color:#fff;font-weight:600;text-align:center}
+.btn.soft{background:#636366}
+.btn.ghost{height:44px;background:none;color:#64A8FF;font-weight:400}
+.pbar{height:4px;background:var(--track);border-radius:2px}.pbar i{display:block;height:100%;width:0;background:var(--green);border-radius:2px}
+textarea{width:100%;resize:none;border:0;border-radius:10px;background:var(--bg);padding:10px 12px;font-size:15px;line-height:1.35;margin-top:6px}
+.ed{display:flex;align-items:center;gap:2px;padding:0 4px;border-bottom:.5px solid var(--line)}
+.ed:last-child{border-bottom:0}
+.ed input{flex:1;min-width:0;border:0;background:none;padding:13px 4px}
+.ib{width:40px;height:44px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--link)}
+.ib:disabled{opacity:.3}
+.minus{width:22px;height:22px;border-radius:50%;background:#D70015;color:#fff;display:flex;align-items:center;justify-content:center}
+.sw{width:51px;height:31px;flex-shrink:0;border-radius:16px;background:var(--off);padding:2px;display:flex}
+.sw.on{background:var(--green);justify-content:flex-end}.sw i{width:27px;height:27px;border-radius:50%;background:#fff}
+.flow{position:fixed;inset:0;background:#000;color:#fff;z-index:20;padding:calc(env(safe-area-inset-top) + 48px) 24px calc(env(safe-area-inset-bottom) + 28px);display:flex;flex-direction:column;align-items:center;overflow-y:auto}
+.flow>div,.flow>h2,.flow>.why{max-width:420px;width:100%}
+.dot{width:8px;height:8px;border-radius:50%;background:#30D158}
+#toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 24px);transform:translateX(-50%);background:#1C1C1E;color:#fff;font-size:15px;font-weight:600;padding:10px 18px;border-radius:22px;white-space:nowrap;z-index:30;opacity:0;pointer-events:none;transition:opacity .2s}
+#toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="ov"></div>
+<div id="toast" role="status"></div>
+<script>
+// ---------- datos base ----------
+const SKILLS = {Ingenio:'#AF52DE',Sabiduría:'#0A84FF',Fuerza:'#FF3B30',Vitalidad:'#FF9500',Calma:'#34C759'};
+const T = (id,title,why,x) => Object.assign({id,title,why},x||{});
+const AGUA = T('agua','Agua a mano','Así no tienes que levantarte a mitad de la sesión.');
+const BANO = T('bano','Ve al baño','Quitas de antemano la interrupción más común del cuerpo.');
+const LAPIZ = T('lapiz','Lápiz a mano','Anotas lo que se te ocurra sin cambiar de tarea.');
+const MESA = T('mesa','Mesa limpia','Viene de tu hábito "Ordenar la mesa". Si no lo hiciste, tócalo para marcarlo.',{uses:'mesa'});
+const CEL = T('cel','Deja el celular afuera','Aunque esté en silencio, tenerlo cerca te quita foco.');
+const MISSIONS = [
+ {id:'leer',title:'Leer 20 minutos',skill:'Sabiduría',xp:40,min:20,ritual:'Ritual de lectura',label:'Leyendo',steps:[AGUA,BANO,LAPIZ,T('libro','Libro abierto en tu página','Cero fricción: sentarte y leer, nada más.'),MESA,CEL]},
+ {id:'entrenar',title:'Entrenar 30 minutos',skill:'Fuerza',xp:60,min:30,ritual:'Ritual de entrenamiento',label:'Entrenando',steps:[T('plan','Define tu sesión de hoy','Qué ejercicios y cuántas series, antes de empezar.'),T('ropa','Ropa de entrenar puesta','Cambiarte ya es la mitad de la decisión.'),T('agua','Botella de agua llena',AGUA.why),BANO,T('calent','Calienta 3 minutos','Le avisas al cuerpo que viene esfuerzo.'),T('sil','Notificaciones en silencio','Música lista antes de empezar, para no tocar el teléfono.')]},
+ {id:'meditar',title:'Meditar 10 minutos',skill:'Calma',xp:25,min:10,ritual:'Ritual de calma',label:'Meditando',steps:[BANO,T('lugar','Un lugar tranquilo, sentado cómodo','Siempre el mismo sitio se vuelve una señal.'),T('dnd','Celular en No molestar','Nada debería sonar durante estos 10 minutos.'),T('timer','Temporizador puesto','Así no miras la hora a cada rato.'),T('resp','Tres respiraciones profundas','Inhala 4, exhala 6. Es tu señal de entrada.')]},
+ {id:'programar',title:'Programar 1 hora',skill:'Ingenio',xp:80,min:60,ritual:'Ritual de código',label:'Programando',steps:[T('idea','Idea clara y su porqué','Qué concepto o feature vas a construir y para qué. Nada de sentarse por sentarse.',{input:true,ph:'Hoy construyo… porque…'}),MESA,LAPIZ,T('agua','Agua sobre la mesa',AGUA.why),BANO,T('cara','Lávate la cara','Un reinicio rápido que marca el comienzo.'),T('cel','Deja el teléfono fuera',CEL.why)]},
+ {id:'dormir',title:'Dormir antes de las 23:30',skill:'Vitalidad',xp:30,min:30,ritual:'Cierre del día',label:'Bajando revoluciones',steps:[T('pend','Anota lo pendiente de mañana','Lo sacas de la cabeza y lo dejas en papel.'),T('mesa','Ordena la mesa','Mañana tus rituales de leer y programar ya la encuentran lista.',{provides:'mesa'}),T('ropa','Deja lista tu ropa de mañana','Una decisión menos a primera hora.'),T('dientes','Lávate los dientes','Es tu señal de que el día terminó.'),T('luz','Luces bajas','Menos luz, más sueño.'),T('agua','Agua junto a la cama','Para no levantarte de madrugada.'),T('cel','Celular cargando lejos de la cama','Fuera del alcance, fuera de la tentación.')]}
+];
+const IC = {
+ check:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>',
+ chev:'<svg width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="#6E6E73" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 1l6 6-6 6"/></svg>',
+ flame:'<svg width="14" height="14" viewBox="0 0 24 24" fill="#FF9500" aria-hidden="true"><path d="M12 2c1 4 6 6 6 12a6 6 0 0 1-12 0c0-3 2-5 3-7 1 2 2 3 3 3 0-3-1-5 0-8z"/></svg>',
+ minus:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"/></svg>',
+ up:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>',
+ down:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>'
+};
+
+// ---------- estado ----------
+const KEY = 'nivel.v1';
+const pad = n => String(n).padStart(2,'0');
+const dayKey = d => { d = d || new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); };
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const newDay = () => ({date:dayKey(),done:{},checks:{},intent:{},prepXp:false});
+const THEMES = {dark:'Oscuro',light:'Claro',auto:'Automático'};
+const mq = window.matchMedia('(prefers-color-scheme: dark)');
+function applyTheme(){
+  const dark = S.theme === 'dark' || (S.theme === 'auto' && mq.matches);
+  document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+  document.querySelector('meta[name=theme-color]').content = dark ? '#000000' : '#F2F2F7';
+}
+mq.addEventListener('change', applyTheme);
+const fresh = () => ({theme:'dark',level:1,xp:0,streak:0,last:'',skills:{},steps:{},prep:{},count:{},day:newDay(),flow:null});
+let S = fresh();
+let ui = {screen:'home',mid:'leer',newStep:''};
+// En la app (Tauri) el progreso lo guarda Rust en estado.json; en un navegador normal, localStorage.
+const invoke = window.__TAURI__ && window.__TAURI__.core && window.__TAURI__.core.invoke;
+const save = () => {
+  const json = JSON.stringify(S);
+  if (invoke) invoke('save_state', {json}).catch(e => toast('No se pudo guardar: '+e));
+  else try { localStorage.setItem(KEY, json); } catch (e) {}
+};
+const need = L => 200 + 50*L;
+const mission = id => MISSIONS.find(m => m.id === id);
+const stepsOf = id => S.steps[id] || mission(id).steps;
+const ensure = id => { if (!S.steps[id]) S.steps[id] = JSON.parse(JSON.stringify(mission(id).steps)); return S.steps[id]; };
+const isChecked = (mid, st) => st.input ? (S.day.intent[mid]||'').trim().length >= 3
+  : (st.uses || st.provides) ? !!S.prep[st.uses || st.provides] : !!S.day.checks[mid+'.'+st.id];
+const info = mid => { const s = stepsOf(mid); return {s, n:s.filter(x => isChecked(mid,x)).length}; };
+
+function addXp(n){
+  S.xp += n;
+  while (S.xp >= need(S.level)) { S.xp -= need(S.level); S.level++; toast('¡Subiste al nivel '+S.level+'!'); }
+}
+let tt;
+function toast(t){ const e = document.getElementById('toast'); e.textContent = t; e.className = 'show'; clearTimeout(tt); tt = setTimeout(() => e.className = '', 3200); }
+
+// ---------- vistas ----------
+function ring(r, frac, col){ const c = 2*Math.PI*r; return '<circle cx="56" cy="56" r="'+r+'" stroke="'+col+'" stroke-opacity=".18"/><circle cx="56" cy="56" r="'+r+'" stroke="'+col+'" stroke-dasharray="'+(c*Math.min(1,frac)).toFixed(1)+' '+c.toFixed(1)+'"/>'; }
+
+function home(){
+  const doneN = MISSIONS.filter(m => S.day.done[m.id]).length;
+  const date = new Date().toLocaleDateString('es',{weekday:'long',day:'numeric',month:'long'});
+  const rows = MISSIONS.map(m => S.day.done[m.id]
+    ? '<div class="row"><span class="circ on">'+IC.check+'</span><span class="in"><span class="tx mut"><span>'+esc(m.title)+'</span><span class="sm">'+m.skill+' · completada</span></span><span class="mut" style="font-size:15px">+'+m.xp+' XP</span></span></div>'
+    : '<button class="row" data-act="open" data-arg="'+m.id+'"><span class="circ"></span><span class="in"><span class="tx"><span>'+esc(m.title)+'</span><span class="sm mut">'+m.skill+' · ritual de '+stepsOf(m.id).length+' pasos</span></span><span class="xp">+'+m.xp+' XP</span>'+IC.chev+'</span></button>').join('');
+  const skills = Object.keys(SKILLS).map(k => { const v = S.skills[k]||0; return '<div class="skill"><b style="color:'+SKILLS[k]+'">'+k+'</b><span class="sm mut">Nivel '+v+'</span><div class="bar"><i style="width:'+(v%10)*10+'%;background:'+SKILLS[k]+'"></i></div></div>'; }).join('');
+  const pm = !!S.prep.mesa;
+  return '<header><div class="eyebrow">'+esc(date)+'</div><h1 style="font-size:34px;font-weight:700;letter-spacing:-.02em">Hoy</h1></header>'
+  +'<section class="hero"><svg width="112" height="112" viewBox="0 0 112 112" role="img" aria-label="Anillos de nivel, misiones y racha"><g transform="rotate(-90 56 56)" fill="none" stroke-width="10" stroke-linecap="round">'+ring(48,S.xp/need(S.level),'#FF2D55')+ring(36,doneN/MISSIONS.length,'#34C759')+ring(24,S.streak/7,'#0A84FF')+'</g></svg>'
+  +'<div style="display:flex;flex-direction:column;gap:8px"><div class="stat"><span>Nivel '+S.level+'</span><b style="color:var(--red)">'+S.xp+'/'+need(S.level)+' <small style="font-size:13px">XP</small></b></div><div class="stat"><span>Misiones</span><b style="color:var(--grn)">'+doneN+'/'+MISSIONS.length+'</b></div><div class="stat"><span>Racha</span><b style="color:var(--link)">'+S.streak+' <small style="font-size:13px">días</small></b></div></div></section>'
+  +'<section class="sec"><div class="sech"><h2>Misiones</h2><span class="sm mut">Toca una para preparar tu ritual</span></div><div class="card">'+rows+'</div></section>'
+  +'<section class="sec"><div class="sech"><h2>Preparación</h2></div><div class="card"><button class="row" data-act="prep" data-arg="mesa" aria-pressed="'+pm+'"><span class="circ'+(pm?' on':'')+'" style="'+(pm?'':'')+'">'+IC.check+'</span><span class="in"><span class="tx"><span>Ordenar la mesa</span><span class="sm mut">'+(pm?'Lista para leer y programar':'Pendiente · mejor antes de dormir')+'</span></span><span class="xp">+10 XP</span></span></button></div></section>'
+  +'<section class="sec"><div class="sech"><h2>Habilidades</h2></div><div class="skills">'+skills+'</div></section>'
+  +'<div style="display:flex;gap:8px;justify-content:center"><button class="sm mut" style="padding:12px" data-act="theme">Tema: '+THEMES[S.theme]+'</button><button class="sm mut" style="padding:12px" data-act="reset">Reiniciar datos</button></div>';
+}
+
+function stepRow(mid, st){
+  const on = isChecked(mid, st);
+  if (st.input) return '<div class="row" style="align-items:flex-start;padding:12px 16px;gap:12px"><span class="circ ck'+(on?' on':'')+'" id="ck-'+st.id+'" style="margin-top:1px">'+IC.check+'</span><div style="flex:1;min-width:0"><label for="why" style="font-weight:500">'+esc(st.title)+'</label><div class="sm mut">'+esc(st.why)+'</div><textarea id="why" rows="3" data-in="intent" placeholder="'+esc(st.ph||'')+'">'+esc(S.day.intent[mid]||'')+'</textarea></div></div>';
+  return '<button class="row" data-act="tog" data-arg="'+esc(st.id)+'" aria-pressed="'+on+'"><span class="circ ck'+(on?' on':'')+'" id="ck-'+st.id+'">'+IC.check+'</span><span class="in"><span class="tx"><span style="font-weight:500">'+esc(st.title)+'</span><span class="sm mut">'+esc(st.why)+'</span></span></span></button>';
+}
+
+function ritual(){
+  const m = mission(ui.mid), {s,n} = info(m.id), miss = s.length - n;
+  return '<div class="ov"><div class="sheet" role="dialog" aria-label="Ritual de entrada"><div class="grab"></div>'
+  +'<div class="nav"><button data-act="close">Cancelar</button><button data-act="edit">Editar</button></div>'
+  +'<div class="head"><span class="eyebrow">'+esc(m.ritual)+'</span><h2>'+esc(m.title)+'</h2><p class="mut" style="font-size:15px">Siempre el mismo ritual: así tu cerebro aprende que ahora toca enfocarse.</p><div class="sm mut" style="display:flex;gap:6px;align-items:center">'+IC.flame+'<span>'+((S.count[m.id]||0) ? 'Has completado este ritual '+S.count[m.id]+' '+(S.count[m.id]==1?'vez':'veces') : 'Hoy empiezas tu primera repetición')+'</span></div></div>'
+  +'<div style="padding:14px 20px 8px;display:flex;flex-direction:column;gap:6px"><div class="sm" style="display:flex;justify-content:space-between;font-weight:600"><span id="prog">'+n+' de '+s.length+' pasos</span><span class="mut" id="left">'+(miss?'Faltan '+miss:'Listo')+'</span></div><div class="pbar"><i id="bar" style="width:'+(s.length?Math.round(100*n/s.length):100)+'%"></i></div></div>'
+  +'<div class="list"><div class="card">'+s.map(st => stepRow(m.id,st)).join('')+'</div></div>'
+  +'<div class="foot"><button class="btn'+(miss?' soft':'')+'" id="go" data-act="start">'+(miss?'Entrar igual (faltan '+miss+')':'Entrar en flow')+'</button></div></div></div>';
+}
+
+function edit(){
+  const m = mission(ui.mid), s = stepsOf(m.id), why = s.some(x => x.input);
+  const rows = s.map((st,i) => '<div class="ed"><button class="ib" data-act="rm" data-arg="'+i+'" aria-label="Quitar paso"><span class="minus">'+IC.minus+'</span></button><input aria-label="Nombre del paso" value="'+esc(st.title)+'" data-in="title" data-arg="'+i+'"><button class="ib" data-act="up" data-arg="'+i+'" aria-label="Subir paso"'+(i?'':' disabled')+'>'+IC.up+'</button><button class="ib" data-act="dn" data-arg="'+i+'" aria-label="Bajar paso"'+(i<s.length-1?'':' disabled')+'>'+IC.down+'</button></div>').join('');
+  return '<div class="ov"><div class="sheet" role="dialog" aria-label="Editar ritual"><div class="grab"></div>'
+  +'<div class="nav"><button data-act="resetSteps">Restablecer</button><button data-act="ritual" style="font-weight:600">Listo</button></div>'
+  +'<div class="head" style="padding-bottom:14px"><span class="eyebrow">'+esc(m.ritual)+'</span><h2>Editar ritual</h2><p class="mut" style="font-size:15px">Mientras más igual sea cada vez, más rápido entras en flow. Ajusta los pasos a tu medida.</p></div>'
+  +'<div class="list"><div class="card"><div class="row" style="padding:12px 16px"><div class="tx" style="flex:1"><span>Pedir mi porqué</span><span class="sm mut">Antes de empezar escribes qué vas a hacer y para qué.</span></div><button class="sw'+(why?' on':'')+'" role="switch" aria-checked="'+why+'" aria-label="Pedir mi porqué" data-act="why"><i></i></button></div></div>'
+  +'<div class="sec"><span class="eyebrow" style="padding:0 16px">Pasos</span><div class="card">'+rows+'</div></div>'
+  +'<div class="card"><div class="ed" style="padding-left:16px"><input aria-label="Nuevo paso" placeholder="Nuevo paso…" value="'+esc(ui.newStep)+'" data-in="new" style="padding-left:0"><button class="link" style="font-weight:600;padding:0 12px;min-height:44px" data-act="add">Añadir</button></div></div></div></div></div>';
+}
+
+const CIRC = 2*Math.PI*118;
+const mmss = ms => { const t = Math.max(0, Math.ceil(ms/1000)); return pad(Math.floor(t/60))+':'+pad(t%60); };
+function flow(){
+  const f = S.flow, m = mission(f.mid), rem = f.end - Date.now(), it = (S.day.intent[m.id]||'').trim();
+  return '<div class="flow"><div class="sm" style="display:flex;align-items:center;gap:8px;justify-content:center;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#AEAEB2"><span class="dot"></span><span>En flow · '+esc(m.label)+'</span></div>'
+  +'<h2 style="margin-top:12px;font-size:28px;font-weight:700;letter-spacing:-.02em;text-align:center">'+esc(m.title)+'</h2>'
+  +'<div style="position:relative;width:260px;height:260px;margin:32px auto 0"><svg width="260" height="260" viewBox="0 0 260 260" aria-hidden="true"><g transform="rotate(-90 130 130)" fill="none" stroke-width="8" stroke-linecap="round"><circle cx="130" cy="130" r="118" stroke="#2C2C2E"/><circle id="t-ring" cx="130" cy="130" r="118" stroke="#0A84FF" stroke-dasharray="'+(CIRC*Math.max(0,rem)/f.total).toFixed(1)+' '+CIRC.toFixed(1)+'"/></g></svg>'
+  +'<div role="timer" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center"><span id="t-time" style="font-size:64px;font-weight:300;letter-spacing:-.02em;font-variant-numeric:tabular-nums">'+mmss(rem)+'</span><span class="sm" style="color:#AEAEB2">restantes</span></div></div>'
+  +(it.length>=3 ? '<div class="why" style="margin-top:28px;background:#1C1C1E;border-radius:14px;padding:14px 16px"><div class="eyebrow" style="color:#AEAEB2">Tu porqué de hoy</div><div style="margin-top:4px">'+esc(it)+'</div></div>' : '')
+  +'<div style="margin-top:auto;padding-top:24px;display:flex;flex-direction:column;gap:8px"><button class="btn" data-act="finish">Terminé · +'+m.xp+' XP</button><button class="btn ghost" data-act="exit">Salir sin completar</button></div></div>';
+}
+
+function render(){
+  if (S.day.date !== dayKey()) S.day = newDay();
+  applyTheme();
+  const keep = document.querySelector('.list'), top = keep ? keep.scrollTop : 0;
+  document.getElementById('app').innerHTML = home();
+  document.getElementById('ov').innerHTML = S.flow ? flow() : ui.screen === 'ritual' ? ritual() : ui.screen === 'edit' ? edit() : '';
+  document.body.style.overflow = (S.flow || ui.screen !== 'home') ? 'hidden' : '';
+  const l = document.querySelector('.list'); if (l) l.scrollTop = top;
+}
+
+// actualiza el ritual sin re-render (no pierde el foco del teclado)
+function refreshRitual(){
+  const m = mission(ui.mid), {s,n} = info(m.id), miss = s.length - n, $ = id => document.getElementById(id);
+  s.forEach(st => { const c = $('ck-'+st.id); if (c) c.classList.toggle('on', isChecked(m.id,st)); });
+  $('prog').textContent = n+' de '+s.length+' pasos'; $('left').textContent = miss ? 'Faltan '+miss : 'Listo';
+  $('bar').style.width = (s.length ? Math.round(100*n/s.length) : 100)+'%';
+  $('go').className = 'btn'+(miss ? ' soft' : ''); $('go').textContent = miss ? 'Entrar igual (faltan '+miss+')' : 'Entrar en flow';
+}
+
+// ---------- acciones ----------
+function setPrep(k, v){
+  S.prep[k] = v;
+  if (v && !S.day.prepXp) { S.day.prepXp = true; addXp(10); toast('+10 XP · Preparación'); }
+}
+const A = {
+  open: id => { ui = {screen:'ritual',mid:id,newStep:''}; },
+  close: () => { ui.screen = 'home'; },
+  ritual: () => { ui.screen = 'ritual'; },
+  edit: () => { ui.screen = 'edit'; },
+  prep: k => setPrep(k, !S.prep[k]),
+  theme: () => { S.theme = {dark:'light',light:'auto',auto:'dark'}[S.theme] || 'dark'; },
+  tog: sid => {
+    const st = stepsOf(ui.mid).find(x => x.id === sid), k = st.uses || st.provides;
+    if (k) setPrep(k, !S.prep[k]); else { const key = ui.mid+'.'+sid; S.day.checks[key] = !S.day.checks[key]; }
+  },
+  start: () => { const m = mission(ui.mid); S.flow = {mid:m.id,end:Date.now()+m.min*60000,total:m.min*60000,buzzed:false}; },
+  exit: () => { S.flow = null; ui.screen = 'home'; },
+  finish: () => {
+    const m = mission(S.flow.mid);
+    stepsOf(m.id).forEach(st => { if (st.uses) S.prep[st.uses] = false; }); // ponytail: la mesa "se gasta" al usarla
+    S.day.done[m.id] = true; S.count[m.id] = (S.count[m.id]||0) + 1; S.skills[m.skill] = (S.skills[m.skill]||0) + 1;
+    const t = dayKey();
+    if (S.last !== t) { const y = new Date(); y.setDate(y.getDate()-1); S.streak = S.last === dayKey(y) ? S.streak+1 : 1; S.last = t; }
+    S.flow = null; ui.screen = 'home'; addXp(m.xp); toast('+'+m.xp+' XP · +1 '+m.skill);
+  },
+  rm: i => { ensure(ui.mid).splice(+i,1); },
+  up: i => { const a = ensure(ui.mid); i = +i; if (i > 0) [a[i-1],a[i]] = [a[i],a[i-1]]; },
+  dn: i => { const a = ensure(ui.mid); i = +i; if (i < a.length-1) [a[i+1],a[i]] = [a[i],a[i+1]]; },
+  add: () => { const t = ui.newStep.trim(); if (!t) return; ensure(ui.mid).push({id:'x'+Date.now(),title:t,why:'Agregado por ti'}); ui.newStep = ''; },
+  why: () => { const a = ensure(ui.mid), i = a.findIndex(x => x.input); if (i >= 0) a.splice(i,1); else a.unshift({id:'idea',input:true,title:'Idea clara y su porqué',why:'Qué vas a hacer y para qué. Nada de sentarse por sentarse.',ph:'Hoy hago… porque…'}); },
+  resetSteps: () => { delete S.steps[ui.mid]; },
+  reset: () => { if (confirm('¿Borrar todo tu progreso?')) { S = fresh(); ui = {screen:'home',mid:'leer',newStep:''}; } }
+};
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-act]'); if (!b || b.disabled) return;
+  A[b.dataset.act](b.dataset.arg); save(); render();
+});
+document.addEventListener('input', e => {
+  const t = e.target, k = t.dataset.in; if (!k) return;
+  if (k === 'intent') { S.day.intent[ui.mid] = t.value; refreshRitual(); }
+  else if (k === 'title') ensure(ui.mid)[+t.dataset.arg].title = t.value;
+  else ui.newStep = t.value;
+  save();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.dataset.in === 'new') { A.add(); save(); render(); } });
+
+// temporizador: usa la hora de fin, así sobrevive a que el teléfono se duerma
+setInterval(() => {
+  if (!S.flow) return;
+  const rem = S.flow.end - Date.now(), t = document.getElementById('t-time'); if (!t) return;
+  t.textContent = mmss(rem);
+  document.getElementById('t-ring').setAttribute('stroke-dasharray', (CIRC*Math.max(0,rem)/S.flow.total).toFixed(1)+' '+CIRC.toFixed(1));
+  if (rem <= 0 && !S.flow.buzzed) { S.flow.buzzed = true; save(); toast('Tiempo cumplido 🎉'); if (navigator.vibrate) navigator.vibrate([200,100,200]); }
+}, 1000);
+
+(async () => {
+  try {
+    const raw = invoke ? await invoke('load_state') : localStorage.getItem(KEY);
+    if (raw) S = Object.assign(fresh(), JSON.parse(raw));
+  } catch (e) { toast('No se pudo leer tu progreso: '+e); }
+  render();
+})();
+</script>
+</body>
+</html>
